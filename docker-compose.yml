@@ -1,0 +1,105 @@
+# docker-compose.yml
+#
+# Copy `.env.example` to `.env` and adjust MODEL_PATH / DOCUMENTS_PATH to
+# your own machine before running `docker compose up -d`. No personal paths
+# are hardcoded here -- everything host-specific comes from environment
+# variables so this file works unmodified on any machine.
+
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-server
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      - VLLM_WSL2_ENABLE_PIN_MEMORY=1
+
+    volumes:
+      # Forward slashes are used deliberately -- on Windows, "C:\...:/model"
+      # can confuse Docker's host:container separator with the drive letter's
+      # own colon. ${MODEL_PATH} comes from your .env file.
+      - ${MODEL_PATH}:/model
+
+    command:
+      --model /model
+      --quantization awq
+      --host 0.0.0.0
+      --port 8000
+      --trust-remote-code
+      --max-model-len ${LLM_MAX_MODEL_LEN:-4096}
+      --gpu-memory-utilization 0.80
+      --dtype half
+      --enable-auto-tool-choice
+      --tool-call-parser llama3_json
+
+    ipc: host
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8000/v1/models"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  api:
+    build: .
+    container_name: doc-summarizer-api
+
+    ports:
+      - "8001:8000"          # host:8001 -> container:8000 (8000 is taken by vllm)
+
+    environment:
+      - LLM_BASE_URL=http://vllm:8000/v1   # container-internal port, not the host port (service name: vllm)
+      - LLM_MODEL=/model
+      - LLM_MAX_MODEL_LEN=${LLM_MAX_MODEL_LEN:-4096}
+
+    volumes:
+      # Mount TARGET (right side, /data/documents) stays fixed -- your
+      # prompts always reference "/data/documents" regardless of where the
+      # folder actually lives on your host. Only the SOURCE (left side,
+      # ${DOCUMENTS_PATH}) is host-specific, set it in your .env file.
+      - ${DOCUMENTS_PATH:-./documents}:/data/documents
+
+    depends_on:
+      vllm:
+        condition: service_healthy
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+
+    ports:
+      - "3000:8080"
+
+    environment:
+      - OPENAI_API_BASE_URL=http://vllm:8000/v1
+      - OPENAI_API_KEY=vllm-dummy-key
+      - ENABLE_WEB_SEARCH=false
+
+    volumes:
+      - open-webui-data:/app/backend/data
+
+    depends_on:
+      vllm:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+volumes:
+  open-webui-data:

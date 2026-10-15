@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Environment / secrets
+.env
+
+# Generated outputs (don't commit test-run artifacts)
+outputs/
+documents/*_ozet.docx
+documents/TUM_OZETLER.docx
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

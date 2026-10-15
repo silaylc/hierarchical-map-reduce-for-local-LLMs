@@ -1,0 +1,6 @@
+langchain-openai
+langchain-text-splitters
+pypdf
+python-docx
+fastapi
+uvicorn[standard]

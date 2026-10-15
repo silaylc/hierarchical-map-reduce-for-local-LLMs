@@ -1,0 +1,30 @@
+TEST BELGESI - MINIMAL
+Proje Durum Notu
+
+1. Ozet
+
+Bu belge, doc-summarizer aracinin dogru calisip calismadigini test etmek
+icin hazirlanmis kucuk bir ornektir. Belge kasitli olarak kisa tutulmustur;
+amac, sistemin chunking, LLM cagrisi ve dosyaya kaydetme adimlarini
+minimum GPU yukuyle dogrulamaktir.
+
+2. Proje Bilgileri
+
+Proje adi: DocSummarizer PoC
+Sorumlu ekip: AI Muhendisligi
+Baslangic tarihi: 15.08.2026
+Durum: Test asamasinda
+
+3. Teknik Detaylar
+
+Sistem, RTX 3050 GPU uzerinde vLLM ile calisan bir Llama-3.2-3B AWQ
+modelini kullanmaktadir. Context penceresi 2048 token ile
+sinirlandirilmistir. Chunk boyutu 1800 karakter olarak ayarlanmistir.
+
+4. Sonuc
+
+Bu belgenin basariyla ozetlenmesi, sistemin temel islevinin (belge
+okuma, LLM'e gonderme, ozet alma, diske kaydetme) calistigini
+gosterecektir. Herhangi bir hata alinirsa, sorun buyuk belgelerin
+chunking/reduce mantiginda degil, temel baglanti veya kurulumda
+aranmalidir.
