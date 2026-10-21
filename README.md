@@ -1,6 +1,9 @@
 # Document Summarizer — Hierarchical Map-Reduce for Local LLMs
 
 [![tests](https://github.com/silaylc/hierarchical-map-reduce-for-local-LLMs/actions/workflows/tests.yml/badge.svg)](https://github.com/silaylc/hierarchical-map-reduce-for-local-LLMs/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 
 A self-hosted document summarization service built for **local and on-prem LLM
 deployments**. It reads every supported document in a folder, summarizes each
