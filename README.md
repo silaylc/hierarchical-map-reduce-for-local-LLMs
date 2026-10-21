@@ -1,5 +1,7 @@
 # Document Summarizer — Hierarchical Map-Reduce for Local LLMs
 
+[![tests](https://github.com/silaylc/hierarchical-map-reduce-for-local-LLMs/actions/workflows/tests.yml/badge.svg)](https://github.com/silaylc/hierarchical-map-reduce-for-local-LLMs/actions/workflows/tests.yml)
+
 A self-hosted document summarization service built for **local and on-prem LLM
 deployments**. It reads every supported document in a folder, summarizes each
 one independently using a hierarchical Map-Reduce pipeline, and exposes the
@@ -157,7 +159,9 @@ python standalone_cli.py --folder ./documents --out ./outputs \
 
 ### Running the tests
 
-The test suite replaces the LLM with a fake, so it needs no GPU or backend:
+The test suite replaces the LLM with a fake, so it needs no GPU or backend. It runs
+automatically on every push via GitHub Actions (Python 3.11 and 3.12); the badge at
+the top shows the latest result.
 
 ```bash
 pip install -r requirements.txt pytest
