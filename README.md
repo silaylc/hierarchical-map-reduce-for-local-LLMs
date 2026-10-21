@@ -7,11 +7,10 @@ whole thing as an OpenAPI-compliant HTTP service that plugs into
 [OpenWebUI](https://github.com/open-webui/open-webui) as a Tool Server with
 **zero custom integration code**.
 
-Designed and tested end-to-end on a resource-constrained GPU (6GB VRAM) before
-being promoted to a production-grade inference backend — the summarization
-engine itself is completely decoupled from the deployment target, so the same
-code runs against a small quantized model on a laptop GPU or a full-precision
-model on a multi-GPU server without modification.
+Developed and tested end-to-end on a 6 GB VRAM laptop GPU. The summarization
+engine is decoupled from the deployment target, so the same code runs against a
+small quantized model on a laptop GPU or a full-precision model on a multi-GPU
+server without modification.
 
 ## Why this exists
 
@@ -24,9 +23,10 @@ moment documents get longer than the model's context window:
    window if the document produced many chunks.
 
 Most simple "summarize a folder" scripts only solve (1). This project solves
-both — the reduce step dynamically estimates the token budget available on
-the configured backend and re-batches intermediate summaries accordingly,
-instead of using a fixed group size. See [Architecture](#architecture) below.
+both — the reduce step estimates the token budget available on the configured
+backend (a conservative character-based estimate, no tokenizer dependency)
+and re-batches intermediate summaries accordingly, instead of using a fixed
+group size. See [Architecture](#architecture) below.
 
 ## Key Features
 
@@ -35,8 +35,8 @@ instead of using a fixed group size. See [Architecture](#architecture) below.
   recursive reduction into a single coherent summary.
 - **Structured extraction prompts** — each chunk is summarized against an
   explicit schema (main topic, key facts, figures/dates, decisions, risks)
-  instead of a generic "summarize this" instruction, which measurably
-  improves what survives into the final summary.
+  instead of a generic "summarize this" instruction, so that numbers, dates
+  and risks are explicitly asked for at every chunk.
 - **Paragraph-aware chunking** — text is split along paragraph boundaries
   first and packed greedily, instead of naive fixed-length character
   slicing that can cut a claim or sentence in half.
@@ -114,6 +114,8 @@ wrapped in a queue system without touching the summarization logic itself.
 │   └── doc_writer.py    # .docx report generation
 ├── api/
 │   └── main.py          # FastAPI service (sync + async endpoints)
+├── tests/               # pytest suite, runs without an LLM backend
+├── documents/           # fictional sample documents for trying the pipeline
 ├── standalone_cli.py    # CLI entry point for local testing without an API server
 ├── Dockerfile
 ├── docker-compose.yml   # example: LLM backend + this service + OpenWebUI
@@ -152,6 +154,21 @@ Or run the summarization engine directly, without an API server:
 python standalone_cli.py --folder ./documents --out ./outputs \
     --base-url http://localhost:8000/v1 --model your-model-name
 ```
+
+### Running the tests
+
+The test suite replaces the LLM with a fake, so it needs no GPU or backend:
+
+```bash
+pip install -r requirements.txt pytest
+pytest
+```
+
+It covers paragraph-aware chunking (no chunk exceeds `chunk_size`, paragraphs
+are never cut in half), context-budget-aware reduce batching, termination of the
+hierarchical reduce even with a tiny context window, retry behaviour, document
+loading and `.docx` output, host/container path translation, and per-document
+fault isolation.
 
 ### Full stack with Docker Compose
 
@@ -224,12 +241,11 @@ service. Known gaps, in rough order of priority:
   extractable text layer.
 - **Character/paragraph-based chunking only** — no semantic (embedding-based)
   chunking yet.
-- **No automated test suite** — currently verified via manual/`curl`-based
-  testing.
+- **No end-to-end tests against a real model** — the test suite covers the
+  pipeline logic with a fake LLM; summary quality is checked manually.
 - **No persistent metrics/logging** — per-run metrics (chunk counts, timing)
   are returned in the API response but not stored anywhere for trend analysis.
 
 ## License
 
-Specify a license for your repository (e.g. MIT, Apache 2.0) before making it
-public.
+[MIT](LICENSE)

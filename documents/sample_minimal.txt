@@ -1,0 +1,10 @@
+SAMPLE DOCUMENT (fictional) - Minimal smoke test
+
+This short file exists only to check that the pipeline runs end to end:
+loading, chunking, one LLM call and saving the result. It fits in a single
+chunk, so no reduce step is triggered.
+
+Key facts for the summary to keep:
+- The fictional "Harbor Library" will extend its opening hours from 1 March.
+- Weekday hours change from 09:00-17:00 to 08:00-20:00.
+- The change costs an estimated 42,000 EUR per year in additional staffing.

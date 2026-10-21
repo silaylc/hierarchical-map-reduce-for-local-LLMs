@@ -1,0 +1,23 @@
+SAMPLE MEETING NOTES (fictional open-source project "Lumen")
+
+Topic: Release planning for Lumen 2.0
+
+Decisions
+1. Version 2.0 drops support for Python 3.8.
+2. The plugin API is frozen two weeks before the release.
+3. Documentation moves from the wiki to the main repository.
+
+Open questions
+- Whether the configuration file format stays YAML or moves to TOML.
+  Arguments for TOML: stricter syntax, standard library parser.
+  Arguments for YAML: existing users, comments in current configs.
+- Who maintains the Windows installer after the release.
+
+Risks
+- Two contributors are unavailable during the freeze period.
+- Plugin authors may need more than two weeks to adapt.
+
+Action items
+- Draft a migration guide for plugin authors.
+- Open a discussion thread on the configuration format.
+- Collect feedback from the three largest downstream projects.

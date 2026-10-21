@@ -255,11 +255,11 @@ class DocumentSummarizer:
                     chunks.append(current)
                 # Overlap: carry over the tail end of the previous chunk into
                 # the new one so context isn't lost entirely.
-                if self.config.chunk_overlap > 0 and current:
-                    tail = current[-self.config.chunk_overlap:]
-                    current = f"{tail}\n\n{p}"
-                else:
-                    current = p
+                # The tail is only carried over if the new chunk still fits in
+                # chunk_size; otherwise the chunk starts with the paragraph alone.
+                tail = current[-self.config.chunk_overlap:] if self.config.chunk_overlap > 0 else ""
+                with_tail = f"{tail}\n\n{p}" if tail else p
+                current = with_tail if len(with_tail) <= self.config.chunk_size else p
         if current:
             chunks.append(current)
 

@@ -223,8 +223,7 @@ async def _process_folder(req: FolderRequest) -> FolderSummaryResponse:
     if req.save_to_folder and req.save_mode == "combined" and combined_parts:
         # NOTE: this file is OVERWRITTEN ON EVERY RUN (not appended) -- it
         # collects the summaries of every document from that run into a
-        # single file. If you want cumulative (incremental) appending across
-        # different runs instead, let us know and we can change the logic.
+        # single file.
         combined_file = Path(folder) / "ALL_SUMMARIES.docx"
         try:
             write_combined_docx(combined_file, req.folder, combined_parts)

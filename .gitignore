@@ -9,12 +9,15 @@ venv/
 
 # Generated outputs (don't commit test-run artifacts)
 outputs/
-documents/*_ozet.docx
-documents/TUM_OZETLER.docx
+documents/*_summary.docx
+documents/ALL_SUMMARIES.docx
 
 # Editor
 .vscode/
 .idea/
+
+# Test cache
+.pytest_cache/
 
 # OS
 .DS_Store
