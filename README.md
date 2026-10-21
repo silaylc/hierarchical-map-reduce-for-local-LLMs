@@ -167,7 +167,7 @@ automatically on every push via GitHub Actions (Python 3.11 and 3.12); the badge
 the top shows the latest result.
 
 ```bash
-pip install -r requirements.txt pytest
+pip install -r requirements-dev.txt
 pytest
 ```
 
